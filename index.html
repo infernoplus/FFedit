@@ -5,9 +5,14 @@
  <body onkeyup="input.onKey(event, false);" onkeydown="input.onKey(event, true);" oncontextmenu="return false;">
   <div>
    <span>
-    Width: <input type="text" value="128" id="width"/>
-    Height: <input type="text" value="128" id="height"/>
-    <button onclick="editor.resizeMap()">Update</button>
+    W/<input type="text" value="128" id="width"/>
+    H/<input type="text" value="128" id="height"/>
+    <button onclick="editor.resizeMap()">Resize</button>
+    C/<input id="collision" type="checkbox" onclick="input.editCollision()"/>
+    |
+    <button onclick="map.size()">Save</button>
+    |
+    <input type="file" id="file-input"/>
    </span>
   </div>
   <div>
