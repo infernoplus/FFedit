@@ -10,8 +10,11 @@ image.init = function() {
 	image.load([
 			'img/test.png',
 			'img/tools.png',
+			'img/direction.png',
 			'img/collisionTools.png',
-			'img/direction.png'
+			'img/eventTools.png',
+			'img/objectTools.png',
+			'img/objectDirTools.png'
 	]);
 };
 
