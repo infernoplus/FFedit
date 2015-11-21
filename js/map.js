@@ -3,18 +3,61 @@
 var map = {};
 
 map.init = function() {
-	map.size = {x: 0, y: 0};
+	map.evt = []; //Event pallete
+	map.obj = []; //Object pallete
 
-	map.resize(128,128);
+	map.size = {x: 128, y: 128}; //Map bounds
+	map.data = []; //Map tile data
+  map.objData = []; //Object data
+
+	for(var i=0;i<map.size.x;i++) {
+		map.data.push([]);
+		for(var j=0;j<map.size.y;j++) {
+		  map.data[i].push({x:i, y:j, tile: 0, r:0, c:false, evt: []});
+		}
+	}
 };
 
 map.resize = function(x,y) {
-	map.data = [];
-	map.size = {x: x, y: y};
-	for(var i=0;i<x;i++) {
-		map.data.push([]);
-		for(var j=0;j<y;j++) {
-		  map.data[i].push({x:i, y:j, tile: 0, r:0, c:false, evt: []});
+	//Expand
+	if(x > map.size.x) {
+		var k = x-map.size.x;
+		for(var i=0;i<k;i++) {
+			var nurow = [];
+			for(var j=0;j<map.size.y;j++) {
+				nurow.push({x:i+map.size.x, y:j, tile: 0, r:0, c:false, evt: []});
+			}
+			map.data.push(nurow);
+		}
+		map.size.x = x;
+	}
+	//Truncate
+	if(x < map.size.x) {
+		map.data.splice(x, map.size.x-x);
+		map.size.x = x;
+	}
+	//Expand
+	if(y > map.size.y) {
+		var k = y-map.size.y;
+		for(var i=0;i<map.data.length;i++) {
+			for(var j=0;j<k;j++) {
+				map.data[i].push({x:j+map.size.y, y:i, tile: 0, r:0, c:false, evt: []});
+			}
+		}
+		map.size.y = y;
+	}
+	//Truncate
+	if(y < map.size.y) {
+		for(var i=0;i<map.data.length;i++) {
+			map.data[i].splice(y,map.size.y-y);
+		}
+		map.size.y = y;
+	}
+	//Delete OOB objects
+	for(var i=0;i<map.objData.length;i++) {
+		if(!map.inBounds({x: map.objData[i].x, y: map.objData[i].y})) {
+			map.objData.splice(i,1);
+			i--;
 		}
 	}
 };
@@ -48,24 +91,67 @@ map.open = function(e) {
 };
 
 map.load = function(file) {
-	var ary = file.split("\n");
-	var header = ary[0].split(",");
-
+	map.size = {};
 	map.data = [];
-	map.size = {x: parseInt(header[0]), y: parseInt(header[1])};
-	var k = 1;
-	for(var i=0;i<map.size.x;i++)
+	map.evt = [];
+	map.obj = [];
+	map.objData = [];
+
+	var ary = file.split("\n");
+	var k = 0; //Line number
+
+  //Parse evt palette
+	var evtHeader = parseInt(ary[k++]);
+	for(var i=0;i<evtHeader;i++) {
+		var evt = ary[k++].split(",");
+		map.evt.push({id: evt[0], name: evt[1], type: evt[2], color: evt[3]});
+	}
+
+	//Parse obj palette
+	var objHeader = parseInt(ary[k++]);
+	for(var i=0;i<objHeader;i++) {
+		var obj = ary[k++].split(",");
+		map.obj.push({id: obj[0], name: obj[1], color: obj[2], sym: obj[3]});
+	}
+
+	//Parse tile data
+	var tileHeader = ary[k++].split(",");
+	map.size = {x: parseInt(tileHeader[0]), y: parseInt(tileHeader[1])};
+	for(var i=0;i<map.size.x;i++) {
 			map.data.push(new Array(map.size.y));
+  }
 	for(var j=0;j<map.size.y;j++) {
 		for(var i=0;i<map.size.x;i++) {
-			var tile = ary[k++].split(",");
-			map.data[i][j] = {x: i, y: j, tile: parseInt(tile[0]), r: parseInt(tile[1]), c: tile[2] === "true" ? true : false, evt: []};
+			var line = ary[k++];
+			var tile = line.split(",");
+			var evt = line.split("[")[1].split("]")[0].split(",");
+			map.data[i][j] = {x: i, y: j, tile: parseInt(tile[0]), r: parseInt(tile[1]), c: tile[2] === "true" ? true : false, evt: evt[0] !== "" ? evt : []};
 		}
+	}
+
+	//Parse obj data
+	var objDataHeader = parseInt(ary[k++]);
+	for(var i=0;i<objDataHeader;i++) {
+		var objData = ary[k++].split(",");
+		map.objData.push({id: objData[0], x: parseInt(objData[1]), y: parseInt(objData[2]), r: parseInt(objData[3])});
 	}
 }
 
 map.save = function() {
-	var out = map.size.x + "," + map.size.y + "\n";
+	//Compile evt palette
+	var out = map.evt.length + "\n";
+	for(var i=0;i<map.evt.length;i++) {
+		out += map.evt[i].id + "," + map.evt[i].name + "," + map.evt[i].type + "," + map.evt[i].color + "\n";
+	}
+
+	//Compile obj palette
+	out += map.obj.length + "\n";
+	for(var i=0;i<map.obj.length;i++) {
+		out += map.obj[i].id + "," + map.obj[i].name + "," + map.obj[i].color + "," + map.obj[i].sym + "\n";
+	}
+
+	//Compile map tile data
+	out += map.size.x + "," + map.size.y + "\n";
 	for(var j=0;j<map.size.y;j++) {
 		for(var i=0;i<map.size.x;i++) {
 			var t = map.data[i][j];
@@ -83,6 +169,13 @@ map.save = function() {
 		}
 	}
 
+	//Compile map obj data
+	out += map.objData.length + "\n";
+	for(var i=0;i<map.objData.length;i++) {
+		out += map.objData[i].id + "," + map.objData[i].x + "," + map.objData[i].y + "," + map.objData[i].r + "\n";
+	}
+
+	//Write to file
 	var data = new Blob([out], {type: 'text/plain'});
 
 	var textFile;
