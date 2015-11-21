@@ -3,22 +3,44 @@
  <link rel="stylesheet" href="css/game.css">
  </head>
  <body onkeyup="input.onKey(event, false);" onkeydown="input.onKey(event, true);" oncontextmenu="return false;">
+ <div id="mapEditor" style="display: block">
   <div>
    <span>
-    W/<input type="text" value="128" id="width"/>
-    H/<input type="text" value="128" id="height"/>
+    W/<input type="text" value="128" id="width" style="width: 60px"/>
+    H/<input type="text" value="128" id="height" style="width: 60px"/>
     <button onclick="editor.resizeMap()">Resize</button>
-    C/<input id="collision" type="checkbox" onclick="input.editCollision()"/>
+	|
+	C/<input id="collision" onclick="input.editCollision()" type="checkbox">
+	|
+	E/<input id="event" onclick="input.editEvent()" type="checkbox">
+	<button onclick="input.editEventMode()">Edit</button>
     |
-    <button onclick="map.save()">Save</button>
+    O/<input id="object" onclick="input.editObject()" type="checkbox">
+	<button onclick="input.editObjectMode()">Edit</button>
     |
-    <input type="file" id="file-input"/>
+	<button onclick="map.save()">Save</button>
+    |
+	<input type="file" id="file-input"/>
    </span>
   </div>
   <div>
    <canvas id="display" style="float:left" width=640 height=480 onmousedown="input.onMouse(event);" onmousemove="input.onMouse(event);"></canvas>
-   <div id="tileList" style="float:right; width:330; height:100%; overflow-y:scroll; overflow-x:visible">
-   </div>
+   <div id="tileList" style="display: block; float:right; width:330; height:98%; overflow-y:scroll; overflow-x:visible">Loading...</div>
+   <div id="eventSelection" style="display: none; float:right; width:330; height:98%; overflow-y:scroll; overflow-x:visible">Loading...</div>
+   <div id="objectSelection" style="display: none; float:right; width:330; height:98%; overflow-y:scroll; overflow-x:visible">Loading...</div>
+  </div>
+  </div>
+  <div id="eventEditor" style="display: none">
+    <div style="border-style: solid; border-color: #000000; border-width: 0 0 1 0; margin-bottom: 8px;"><b>Event Palette</b></div>
+    <button onclick="editor.addEventList()">New</button>
+    <div id="eventList">Loading...</div>
+  	<div style="border-style: solid; border-color: #000000; border-width: 1 0 0 0; margin-top: 8px;"><button onclick="input.editMapMode()">Done</button></div>
+  </div>
+  <div id="objectEditor" style="display: none">
+    <div style="border-style: solid; border-color: #000000; border-width: 0 0 1 0; margin-bottom: 8px;"><b>Object Palette</b></div>
+    <button onclick="editor.addObjectList()">New</button>
+    <div id="objectList">Loading...</div>
+  	<div style="border-style: solid; border-color: #000000; border-width: 1 0 0 0; margin-top: 8px;"><button onclick="input.editMapMode()">Done</button></div>
   </div>
  </body>
  <script src="js/image.js"></script>
@@ -29,4 +51,3 @@
  <script src="js/display.js"></script>
  <script src="js/main.js"></script>
 </html>
- 
