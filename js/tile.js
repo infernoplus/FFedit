@@ -5,8 +5,8 @@ var tile = {};
 tile.init = function() {
 
 	tile.tileSet = window.image.get('img/test.png');
-	tile.res = 32;  //Resolution of a single tile
-	tile.sheetRes = 128;//Resolution of the full sheet
+	tile.res = 72;  //Resolution of a single tile
+	tile.sheetRes = 936;//Resolution of the full sheet
 
   tile.container = document.getElementById("tileList");
   tile.container.innerHTML = tile.buildList("img/test.png",tile.res,tile.res,tile.sheetRes);
@@ -14,12 +14,12 @@ tile.init = function() {
 };
 
 tile.buildList = function(src,x,y,size) {
-  var width = (x*4)+16;
+  var width = x*4+16;
   var tonsOfHtml = "<div class='wrapper' style='width:" + width + "px;'>";
   var k = 0;
   for(var i=0;i<size/y;i++) {
     for(var j=0;j<size/x;j++) {
-      tonsOfHtml += "<div onclick='window.tile.selectTile(this,"+k+")'class='cell' style='overflow:hidden; float:left; width: " + x + "px; height: " + y + "px;'>" +
+      tonsOfHtml += "<div onclick='window.tile.selectTile(this,"+k+")'class='cell' style='width: " + x + "px; height: " + y + "px;'>" +
                     "<img style='margin-left: -" + j*x + ";margin-top:-" + i*y + "' src='" + src + "' ></img></div>";
       k++;
     }
