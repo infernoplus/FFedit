@@ -111,7 +111,21 @@ map.load = function(file) {
 	var objHeader = parseInt(ary[k++]);
 	for(var i=0;i<objHeader;i++) {
 		var obj = ary[k++].split(",");
-		map.obj.push({id: obj[0], name: obj[1], color: obj[2], sym: obj[3]});
+		map.obj.push({
+			id: obj[0],
+			name: obj[1],
+			color: obj[2],
+			sym: obj[3],
+			type: obj[4],
+			dname: obj[5],
+			variant: parseInt(obj[6]),
+			lvl: parseInt(obj[7]),
+			team: parseInt(obj[8]),
+			faction: parseInt(obj[9]),
+			aiWorld: obj[10],
+			aiBattle: obj[11],
+			func: obj[12]
+			});
 	}
 
 	//Parse tile data
@@ -133,7 +147,7 @@ map.load = function(file) {
 	var objDataHeader = parseInt(ary[k++]);
 	for(var i=0;i<objDataHeader;i++) {
 		var objData = ary[k++].split(",");
-		map.objData.push({id: objData[0], x: parseInt(objData[1]), y: parseInt(objData[2]), r: parseInt(objData[3])});
+		map.objData.push({id: objData[0], x: parseInt(objData[1]), y: parseInt(objData[2]), r: parseInt(objData[3]), sid: objData[4]});
 	}
 }
 
@@ -147,7 +161,9 @@ map.save = function() {
 	//Compile obj palette
 	out += map.obj.length + "\n";
 	for(var i=0;i<map.obj.length;i++) {
-		out += map.obj[i].id + "," + map.obj[i].name + "," + map.obj[i].color + "," + map.obj[i].sym + "\n";
+		out += map.obj[i].id + "," + map.obj[i].name + "," + map.obj[i].color + "," + map.obj[i].sym + ","
+		    +  map.obj[i].type + "," +  map.obj[i].dname + "," + map.obj[i].variant + "," + map.obj[i].lvl + "," + map.obj[i].team + ","
+		    +  map.obj[i].faction + "," + map.obj[i].aiWorld + "," + map.obj[i].aiBattle + "," + map.obj[i].func + "\n";
 	}
 
 	//Compile map tile data
@@ -172,7 +188,7 @@ map.save = function() {
 	//Compile map obj data
 	out += map.objData.length + "\n";
 	for(var i=0;i<map.objData.length;i++) {
-		out += map.objData[i].id + "," + map.objData[i].x + "," + map.objData[i].y + "," + map.objData[i].r + "\n";
+		out += map.objData[i].id + "," + map.objData[i].x + "," + map.objData[i].y + "," + map.objData[i].r + "," + map.objData[i].sid + "\n";
 	}
 
 	//Write to file

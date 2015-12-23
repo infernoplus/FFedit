@@ -279,7 +279,7 @@ editor.paintObject = function(pos,mvmnt,lmb,rmb,mmb) {
 				return;
 			}
 		}
-		map.objData.push({x: res.x, y: res.y, r: editor.direction, id: editor.selectedObject.id});
+		map.objData.push({x: res.x, y: res.y, r: editor.direction, id: editor.selectedObject.id, sid: editor.generateId()});
 	}
 };
 
@@ -375,13 +375,50 @@ editor.saveObjectList = function() {
 		var name = document.getElementById("_objname"+i);
 		var color = document.getElementById("_objcolor"+i);
 	  var sym = document.getElementById("_objsym"+i);
-	  map.obj[i] = {id: id.value, name: name.value, color: color.value, sym: sym.value};
+	  var type = document.getElementById("_objtype"+i);
+	  var dname = document.getElementById("_objdname"+i);
+	  var variant = document.getElementById("_objvariant"+i);
+	  var lvl = document.getElementById("_objlvl"+i);
+	  var team = document.getElementById("_objteam"+i);
+	  var faction = document.getElementById("_objfaction"+i);
+	  var aiWorld = document.getElementById("_objaiworld"+i);
+	  var aiBattle = document.getElementById("_objaibattle"+i);
+	  var func = document.getElementById("_objfunc"+i);
+	  map.obj[i] = {
+			id: id.value,
+			name: name.value,
+			color: color.value,
+			sym: sym.value,
+			type: type.value,
+			dname: dname.value,
+			variant: variant.value,
+			lvl: lvl.value,
+			team: team.value,
+			faction: faction.value,
+			aiWorld: aiWorld.value,
+			aiBattle: aiBattle.value,
+			func: func.value
+		};
 	}
 };
 
 editor.addObjectList = function() {
 	editor.saveObjectList();
-	map.obj.push({id: editor.generateId(), name: "obj_" + parseInt(Math.random()*1000), color: "#000000", sym: "X"});
+	map.obj.push({
+		id: editor.generateId(),
+		name: "obj_" + parseInt(Math.random()*1000),
+		color: "#000000",
+		sym: "X",
+		type: "npc.default",
+		dname: "Default Object",
+		variant: 0,
+		lvl: 1,
+		team: 0,
+		faction: 1,
+		aiWorld: "none",
+		aiBattle: "none",
+		func: "none"
+	});
 	editor.redrawObjectList();
 };
 
@@ -389,12 +426,22 @@ editor.redrawObjectList = function() {
 	var e = document.getElementById("objectList");
 	var gen = "";
 	for(var i=0;i<map.obj.length;i++) {
-		gen += "<div>"
+		gen += "<div style='background-color: #CCCCCC; border-style: solid; border-color: #000000; border-width: 2px; padding: 3px; margin-bottom: 6px; margin-top: 6px'>"
 		    +  "ID/<input type='text' value='" + map.obj[i].id + "' id='_objid"+i+"' style='width: 240px' disabled/> "
 		    +  "NAME/<input type='text' value='" + map.obj[i].name + "' id='_objname"+i+"' style='width: 120px'/> "
 		    +  "COLOR/<input type='text' value='" + map.obj[i].color + "' id='_objcolor"+i+"' style='width: 60px'/> "
 		    +  "SYM/<input type='text' value='" + map.obj[i].sym + "' id='_objsym"+i+"' style='width: 30px'/> "
 		    +  "<button onclick='editor.deleteObject(\""+map.obj[i].id+"\")'>DELETE</button>"
+		    +  "<div style='border-bottom-style: double; border-bottom-color= #000000; border-bottom-width: 3px; padding-top: 1px; padding-bottom: 1px'></div>"
+		    +  "TYPE/<input type='text' value='" + map.obj[i].type + "' id='_objtype"+i+"' style='width: 120px'/> "
+		    +  "DNAME/<input type='text' value='" + map.obj[i].dname + "' id='_objdname"+i+"' style='width: 120px'/> "
+		    +  "VAR/<input type='text' value='" + map.obj[i].variant + "' id='_objvariant"+i+"' style='width: 20px'/> "
+		    +  "LVL/<input type='text' value='" + map.obj[i].lvl + "' id='_objlvl"+i+"' style='width: 20px'/> "
+		    +  "TEAM/<input type='text' value='" + map.obj[i].team + "' id='_objteam"+i+"' style='width: 20px'/> "
+		    +  "FAC/<input type='text' value='" + map.obj[i].faction + "' id='_objfaction"+i+"' style='width: 20px'/> "
+		    +  "AIW/<input type='text' value='" + map.obj[i].aiWorld + "' id='_objaiworld"+i+"' style='width: 120px'/> "
+		    +  "AIB/<input type='text' value='" + map.obj[i].aiBattle + "' id='_objaibattle"+i+"' style='width: 120px'/> "
+		    +  "FUNC/<input type='text' value='" + map.obj[i].func + "' id='_objfunc"+i+"' style='width: 180px'/> "
 		    +  "</div>";
 	}
 	e.innerHTML = gen;
